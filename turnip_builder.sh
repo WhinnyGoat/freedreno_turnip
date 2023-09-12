@@ -60,8 +60,8 @@ ndk="$workdir/$ndkver/toolchains/llvm/prebuilt/linux-x86_64/bin"
 cat <<EOF >"android-aarch64"
 [binaries]
 ar = '$ndk/llvm-ar'
-c = ['ccache', '$ndk/aarch64-linux-android31-clang']
-cpp = ['ccache', '$ndk/aarch64-linux-android31-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++']
+c = ['ccache', '$ndk/aarch64-linux-android29-clang']
+cpp = ['ccache', '$ndk/aarch64-linux-android29-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++']
 c_ld = 'lld'
 cpp_ld = 'lld'
 strip = '$ndk/aarch64-linux-android-strip'
@@ -76,7 +76,7 @@ EOF
 
 
 echo "Generating build files ..." $'\n'
-meson build-android-aarch64 --cross-file "$workdir"/mesa-main/android-aarch64 -Dbuildtype=release -Dplatforms=android -Dplatform-sdk-version=31 -Dandroid-stub=true -Dgallium-drivers= -Dvulkan-drivers=freedreno -Dfreedreno-kmds=kgsl -Db_lto=true &> "$workdir"/meson_log
+meson build-android-aarch64 --cross-file "$workdir"/mesa-main/android-aarch64 -Dbuildtype=release -Dplatforms=android -Dplatform-sdk-version=29 -Dandroid-stub=true -Dgallium-drivers= -Dvulkan-drivers=freedreno -Dfreedreno-kmds=kgsl -Db_lto=true &> "$workdir"/meson_log
 
 
 
@@ -88,12 +88,12 @@ ninja -C build-android-aarch64 &> "$workdir"/ninja_log
 echo "Using patchelf to match soname ..."  $'\n'
 cp "$workdir"/mesa-main/build-android-aarch64/src/freedreno/vulkan/libvulkan_freedreno.so "$workdir"
 cd "$workdir"
-patchelf --set-soname vulkan.adreno.so libvulkan_freedreno.so
-mv libvulkan_freedreno.so vulkan.adreno.so
+patchelf --set-soname vulkan.trinket.so libvulkan_freedreno.so
+mv libvulkan_freedreno.so vulkan.trinket.so
 
 
 
-if ! [ -a vulkan.adreno.so ]; then
+if ! [ -a vulkan.trinket.so ]; then
 	echo -e "$red Build failed! $nocolor" && exit 1
 fi
 
@@ -157,13 +157,13 @@ EOF
 cat <<EOF >"customize.sh"
 set_perm_recursive \$MODPATH/system 0 0 755 u:object_r:system_file:s0
 set_perm_recursive \$MODPATH/system/vendor 0 2000 755 u:object_r:vendor_file:s0
-set_perm \$MODPATH/$p1/vulkan.adreno.so 0 0 0644 u:object_r:same_process_hal_file:s0
+set_perm \$MODPATH/$p1/vulkan.trinket.so 0 0 0644 u:object_r:same_process_hal_file:s0
 EOF
 
 
 
 echo "Copy necessary files from work directory ..." $'\n'
-cp "$workdir"/vulkan.adreno.so "$magiskdir"/"$p1"
+cp "$workdir"/vulkan.trinket.so "$magiskdir"/"$p1"
 
 
 
