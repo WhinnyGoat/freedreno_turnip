@@ -152,7 +152,11 @@ author=MrMiy4mo
 description=Turnip is an open-source vulkan driver for devices with adreno GPUs.
 EOF
 
-
+cat <<EOF >"customize.sh"
+set_perm_recursive \$MODPATH/system 0 0 755 u:object_r:system_file:s0
+set_perm_recursive \$MODPATH/system/vendor 0 2000 755 u:object_r:vendor_file:s0
+set_perm \$MODPATH/$p1/vulkan.trinket.so 0 0 0644 u:object_r:same_process_hal_file:s0
+EOF
 
 echo "Copy necessary files from work directory ..." $'\n'
 cp "$workdir"/vulkan.trinket.so "$magiskdir"/"$p1"
