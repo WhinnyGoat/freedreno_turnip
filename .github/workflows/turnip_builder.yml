@@ -1,6 +1,6 @@
 name: Build "turnip"
 
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
   start_building_turnip:
